@@ -18,13 +18,10 @@
 #
 # You should have received a copy of the GNU General Public License
 
-import asyncio
 import asynctest
 import logging
-
 import pathlib
 
-from lsst.ts import salobj
 from lsst.ts.observing.utilities.auxtel.latiss.getters import get_image
 
 logging.basicConfig()
@@ -44,34 +41,17 @@ else:
     dataAvailable = False
 
 
-class Harness:
-    def __init__(self):
-        salobj.test_utils.set_random_lsst_dds_domain()
-        logger.debug("inside __init__")
-        # Adds a remote to simulate aspects of the ATArchiver
-        self.atarchiver_remote = salobj.Remote(self.csc.domain, "ATArchiver")
-
-        logger.debug("finished __init__")
-
-    async def __aenter__(self):
-        await asyncio.gather(self.atarchiver_remote.start_task)
-        return self
-
-    async def __aexit__(self, *args):
-        await asyncio.gather(self.atarchiver_remote.close())
-
-
 @asynctest.skipIf(dataAvailable is False, "No data available")
 class TestGetters(asynctest.TestCase):
     async def test_get_image(self):
-        dayObs = "2020-03-15"
-        seqNum = "139"
-        dataId = dict(dayObs=dayObs, seqNum=seqNum)
+        day_obs = "2020-03-15"
+        seq_num = "139"
+        data_id = dict(dayObs=day_obs, seqNum=seq_num)
 
         # BestEffortISR will run be default
-        logger.debug("Starting test with ISR enabled")
+        logger.debug('Starting test with ISR enabled')
         await get_image(
-            dataId,
+            data_id,
             dataset="raw",  # "quickLookExp",
             datapath="/project/shared/auxTel/",
             timeout=10,
@@ -81,7 +61,7 @@ class TestGetters(asynctest.TestCase):
 
         logger.debug("Running test of get_image without ISR enabled")
         await get_image(
-            dataId,
+            data_id,
             runBestEffortIsr=False,
             dataset="raw",  # "quickLookExp",
             datapath="/project/shared/auxTel/",
