@@ -8,6 +8,9 @@ import lsst.ts.observing.utilities
 
 
 _g = globals()
-_g.update(build_package_configs(
-    project_name='ts_observing_utilities',
-    version=lsst.ts.observing.utilities.version.__version__))
+_g.update(
+    build_package_configs(
+        project_name="ts_observing_utilities",
+        version=lsst.ts.observing.utilities.version.__version__,
+    )
+)
