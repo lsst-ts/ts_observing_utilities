@@ -49,7 +49,7 @@ class TestGetters(asynctest.TestCase):
         data_id = dict(dayObs=day_obs, seqNum=seq_num)
 
         # BestEffortISR will run be default
-        logger.debug('Starting test with ISR enabled')
+        logger.debug("Starting test with ISR enabled")
         await get_image(
             data_id,
             dataset="raw",  # "quickLookExp",
