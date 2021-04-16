@@ -3,10 +3,24 @@ from lsst.ts.observatory.control.constants import atcs_constants
 
 
 def parse_obs_id(obs_id):
-    """Split an obsId into its constituent parts
+    """Split an obsId into its constituent parts ()
 
-    E.g.
-        parse_obs_id('AT_O_20200219_000212')
+    Parameters
+    ----------
+    obs_id: `str`
+        Visit id (e.g. 'AT_O_20200219_000212')
+
+    Returns
+    -------
+    source: `str`
+        Telescope (AT or MT)
+    controller: `str`
+        O for OCS, C for CCS
+    dayObs: `str`
+        Date string (e.g. 2021-12-23)
+    seqNum: `int`
+        Sequence number, which is the last set of values in the obs_id.
+
     """
     source, controller, dayObs, seqNum = obs_id.split("_")
     dayObs = f"{dayObs[0:4]}-{dayObs[4:6]}-{dayObs[6:8]}"
@@ -16,10 +30,12 @@ def parse_obs_id(obs_id):
 
 
 def parse_visit_id(visit_id):
-    """Return a data_id from a visit ID
+    """Return a data_id dictionary from a visit ID.
 
-    E.g.
-        parse_visit_id('2021032300308')
+    Parameters
+    ----------
+    visit_id: `int` or `str`
+        Visit id (e.g. '2021032300308')
 
     Returns
     -------
