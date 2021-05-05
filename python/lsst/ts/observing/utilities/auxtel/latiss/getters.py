@@ -18,7 +18,7 @@ async def get_image(
     datapath="/project/shared/auxTel/",
     timeout=STD_TIMEOUT,
     runBestEffortIsr=True,
-    loop_time=0.1
+    loop_time=0.1,
 ):
     """
     Retrieve image from butler repository.
@@ -50,12 +50,15 @@ async def get_image(
         butler = dafPersist.Butler(datapath)
         # try to retrieve the image
         try:
-            logger.debug(f"Pulling data with dataset = {dataset} and dataId = {data_id}")
+            logger.debug(
+                f"Pulling data with dataset = {dataset} and dataId = {data_id}"
+            )
             butler.dataRef(dataset, dataId=data_id)
             break
         except RuntimeError:
             logger.warning(
-                f"Could not get new image from butler. Waiting " f"{loop_time} seconds and trying again."
+                f"Could not get new image from butler. Waiting "
+                f"{loop_time} seconds and trying again."
             )
             await asyncio.sleep(loop_time)
     else:
