@@ -37,39 +37,7 @@ COLORS = {
 }
 
 
-def get_logger(logger_name=None, use_color=True):
-    """
-    Return a logger with the "logger_name".
-
-    Parameters
-    ----------
-    logger_name : str, optional
-        The logger name to be used in different contexts.
-    use_color : bool, optional
-        Use colors on Stream Loggers.
-
-    Returns
-    ------
-    logging.Logger : the logger to be used.
-    """
-    message_format = " [%(levelname).1s %(asctime)s %(name)s] %(message)s"
-    date_format = "%Y-%m-%d %H:%M:%S"
-
-    _logger = logging.getLogger(logger_name)
-
-    if len(_logger.handlers) == 0:
-        formatter = MyLogFormatter(message_format, datefmt=date_format, use_colors=use_color)
-
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setFormatter(formatter)
-
-        _logger.addHandler(handler)
-        _logger.setLevel(logging.DEBUG)
-
-    return _logger
-
-
-class MyLogFormatter(logging.Formatter):
+class DecoratedLogger(logging.Formatter):
     """
     Custom log formatter inspired on Jupyter's logging messages.
 
@@ -86,7 +54,7 @@ class MyLogFormatter(logging.Formatter):
         self.use_colors = use_colors
 
     @staticmethod
-    def color_format(message, levelname, left_char="[", right_char="]"):
+    def color_format(message, level_name, left_char="[", right_char="]"):
         """
         Replaces part of the output message with characters that start and end
         the colored string.
@@ -95,7 +63,7 @@ class MyLogFormatter(logging.Formatter):
         ----------
         message : str
             Logging message.
-        levelname : str
+        level_name : str
             Logging level name as a string.
         left_char : str, optional
             Left character that encapsulates the left side of the part that
@@ -108,7 +76,7 @@ class MyLogFormatter(logging.Formatter):
         -------
         str : message containing the special characters that enable colors.
         """
-        colour = COLOR_SEQ % (30 + COLORS[levelname])
+        colour = COLOR_SEQ % (30 + COLORS[level_name])
 
         message = message.replace(left_char, "{:s} {:s}".format(colour, left_char))
         message = message.replace(right_char, "{:s} {:s}".format(right_char, RESET_SEQ))
@@ -131,9 +99,43 @@ class MyLogFormatter(logging.Formatter):
 
         return result
 
+    @classmethod
+    def get_decorated_logger(cls, logger_name=None, use_color=True):
+        """
+        Return a logger with the "logger_name".
+
+        Parameters
+        ----------
+        logger_name : str, optional
+            The logger name to be used in different contexts.
+        use_color : bool, optional
+            Use colors on Stream Loggers.
+
+        Returns
+        ------
+        logging.Logger : the logger to be used.
+        """
+        _logger = logging.getLogger(logger_name)
+
+        message_format = " [%(levelname).1s %(asctime)s %(name)s] %(message)s"
+        date_format = "%Y-%m-%d %H:%M:%S"
+        formatter = cls(message_format, datefmt=date_format, use_colors=use_color)
+
+        if len(_logger.handlers) == 0:
+            handler = logging.StreamHandler(sys.stdout)
+            handler.setFormatter(formatter)
+
+            _logger.addHandler(handler)
+            _logger.setLevel(logging.DEBUG)
+        else:
+            for handler in _logger.handlers:
+                handler.setFormatter(formatter)
+
+        return _logger
+
 
 if __name__ == "__main__":
-    logger = get_logger('TestColor')
+    logger = DecoratedLogger.get_decorated_logger('TestColor')
     logger.setLevel(logging.DEBUG)
 
     logger.debug("debug message")

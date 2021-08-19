@@ -23,7 +23,7 @@ import logging
 import io
 import unittest
 
-from lsst.ts.observing.utilities.logging import get_logger, MyLogFormatter
+from lsst.ts.observing.utilities.decorated_logger import DecoratedLogger
 
 
 class TestLogFormat(unittest.TestCase):
@@ -32,10 +32,10 @@ class TestLogFormat(unittest.TestCase):
 
     def setUp(self):
 
-        self.formatter = MyLogFormatter()
+        self.formatter = DecoratedLogger
         self.stream = io.StringIO()
         self.handler = logging.StreamHandler(self.stream)
-        self.logger = get_logger(self.logger_name)
+        self.logger = DecoratedLogger.get_decorated_logger(self.logger_name)
 
         for handler in self.logger.handlers:
             self.logger.removeHandler(handler)
@@ -73,7 +73,7 @@ class TestLogFormat(unittest.TestCase):
             self.assertRegex(log_message, self.expected_log_format)
 
     def test_number_of_handlers(self):
-        logger = get_logger(self.logger_name)
+        logger = DecoratedLogger.get_decorated_logger(self.logger_name)
         self.assertEqual(1, len(logger.handlers))
 
     def test_debug(self):
