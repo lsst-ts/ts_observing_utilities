@@ -132,14 +132,3 @@ class DecoratedLogger(logging.Formatter):
                 handler.setFormatter(formatter)
 
         return _logger
-
-
-if __name__ == "__main__":
-    logger = DecoratedLogger.get_decorated_logger('TestColor')
-    logger.setLevel(logging.DEBUG)
-
-    logger.debug("debug message")
-    logger.info("info message")
-    logger.warning("warning message")
-    logger.error("error message")
-    logger.critical("critical message")
