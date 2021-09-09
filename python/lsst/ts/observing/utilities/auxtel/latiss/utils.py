@@ -1,5 +1,5 @@
 __all__ = ["parse_obs_id"]
-from lsst.ts.observatory.control.constants import atcs_constants
+from lsst.ts.observatory.control.constants import latiss_constants
 
 
 def parse_obs_id(obs_id):
@@ -55,7 +55,7 @@ def calculate_xy_offsets(target_position, current_position):
     """Returns x/y offset in arcseconds based on current
     and desired position"""
 
-    dx_arcsec, dy_arcsec = atcs_constants.plate_scale * (
+    dx_arcsec, dy_arcsec = latiss_constants.pixel_scale * (
         target_position - current_position
     )  # arcsec
 
