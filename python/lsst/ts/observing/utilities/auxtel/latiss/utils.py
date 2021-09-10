@@ -1,6 +1,6 @@
 __all__ = ["parse_obs_id"]
-from lsst.ts.observatory.control.constants import latiss_constants
 
+from lsst.ts.observatory.control.constants import latiss_constants
 
 def parse_obs_id(obs_id):
     """Split an obsId into its constituent parts ()
@@ -22,15 +22,16 @@ def parse_obs_id(obs_id):
         Sequence number, which is the last set of values in the obs_id.
 
     """
-    source, controller, dayObs, seqNum = obs_id.split("_")
-    dayObs = f"{dayObs[0:4]}-{dayObs[4:6]}-{dayObs[6:8]}"
-    seqNum = int(seqNum)
+    source, controller, day_obs, seq_num = obs_id.split("_")
+    day_obs = int(f"{day_obs[0:4]}{day_obs[4:6]}{day_obs[6:8]}")
+    seq_num = int(seq_num)
 
-    return source, controller, dayObs, seqNum
+    return source, controller, day_obs, seq_num
 
 
 def parse_visit_id(visit_id):
     """Return a data_id dictionary from a visit ID.
+    The dictionary is formatted for a gen3 butler.
 
     Parameters
     ----------
@@ -40,13 +41,13 @@ def parse_visit_id(visit_id):
     Returns
     -------
     data_id: `dict`
-        dictionary with dayObs and seqNum keys
+        dictionary with newly derived day_obs and seq_num keys
     """
     _visit_id = str(visit_id)
-    day_obs = f"{_visit_id[0:4]}-{_visit_id[4:6]}-{_visit_id[6:8]}"
+    day_obs = int(f"{_visit_id[0:4]}{_visit_id[4:6]}{_visit_id[6:8]}")
     seq_num = int(_visit_id[9::])
 
-    data_id = dict(dayObs=day_obs, seqNum=seq_num)
+    data_id = {'day_obs': day_obs, 'seq_num': seq_num, 'detector': 0, "instrument": 'LATISS'}
 
     return data_id
 
@@ -57,6 +58,6 @@ def calculate_xy_offsets(target_position, current_position):
 
     dx_arcsec, dy_arcsec = latiss_constants.pixel_scale * (
         target_position - current_position
-    )  # arcsec
+    )
 
     return dx_arcsec, dy_arcsec
