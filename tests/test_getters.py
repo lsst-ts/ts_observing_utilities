@@ -33,9 +33,10 @@ logger.propagate = True
 # See if data is available from current location
 # Expect to run from NCSA test stand
 
-mapper = pathlib.Path("/project/shared/auxTel/_parent/_mapper")
+# mapper = pathlib.Path("/project/shared/auxTel/_parent/_mapper")
+butler_config_file = pathlib.Path("/readonly/repo/main/butler.yaml")
 
-if mapper.exists():
+if butler_config_file.exists():
     dataAvailable = True
 else:
     dataAvailable = False
@@ -44,16 +45,16 @@ else:
 @asynctest.skipIf(dataAvailable is False, "No data available")
 class TestGetters(asynctest.TestCase):
     async def test_get_image(self):
-        day_obs = "2020-03-15"
-        seq_num = "139"
-        data_id = dict(dayObs=day_obs, seqNum=seq_num)
+        day_obs = 20200315
+        seq_num = 139
+        data_id = {"day_obs": day_obs, "seq_num": seq_num, "detector": 0, "instrument": 'LATISS'}
 
         # BestEffortISR will run be default
         logger.debug("Starting test with ISR enabled")
         await get_image(
             data_id,
             dataset="raw",  # "quickLookExp",
-            datapath="/project/shared/auxTel/",
+            datapath="/readonly/repo/main/",
             timeout=10,
         )
         # Not sure how to assert if things ran properly. If it errors it
@@ -64,6 +65,6 @@ class TestGetters(asynctest.TestCase):
             data_id,
             runBestEffortIsr=False,
             dataset="raw",  # "quickLookExp",
-            datapath="/project/shared/auxTel/",
+            datapath="/readonly/repo/main/",
             timeout=10,
         )

@@ -1,6 +1,6 @@
 import time
 import asyncio
-import lsst.daf.persistence as dafPersist
+import lsst.daf.butler as dafButler
 import logging
 from lsst.rapid.analysis import BestEffortIsr
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 async def get_image(
     data_id,
     dataset="quickLookExp",
-    datapath="/project/shared/auxTel/",
+    datapath="/repo/main/",
     timeout=STD_TIMEOUT,
     runBestEffortIsr=True,
     loop_time=0.1,
@@ -46,14 +46,15 @@ async def get_image(
 
     endtime = time.time() + timeout
     while time.time() < endtime:
-        # refresh butler repo
-        butler = dafPersist.Butler(datapath)
         # try to retrieve the image
         try:
             logger.debug(
                 f"Pulling data with dataset = {dataset} and dataId = {data_id}"
             )
-            butler.dataRef(dataset, dataId=data_id)
+            #             butler.dataRef(dataset, dataId=data_id)
+            butler = dafButler.Butler(
+                datapath, instrument="LATISS", collections="LATISS/raw/all"
+            )
             break
         except RuntimeError:
             logger.warning(
@@ -66,8 +67,8 @@ async def get_image(
 
     # Found the image, Run bestEffortISR or just return in the image?
     if runBestEffortIsr:
-        logger.debug(f"Running bestEffort ISR on {data_id} and returning exposure")
-        bestEffort = BestEffortIsr(datapath)
+        logger.debug(f"Running bestEffort ISR on {data_id} from datapath={datapath} and returning exposure")
+        bestEffort = BestEffortIsr(datapath, repodirIsGen3=True)
         bestEffort.writePostIsrImages = False  # Don't write to butler database
         exp = bestEffort.getExposure(data_id)
     else:
