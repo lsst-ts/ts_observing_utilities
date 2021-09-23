@@ -1,8 +1,6 @@
 import time
 import asyncio
-import lsst.daf.butler as dafButler
 import logging
-from lsst.rapid.analysis import BestEffortIsr
 
 STD_TIMEOUT = 10  # seconds
 
@@ -14,10 +12,8 @@ logger = logging.getLogger(__name__)
 
 async def get_image(
     data_id,
-    dataset="quickLookExp",
-    datapath="/repo/main/",
+    best_effort_isr,
     timeout=STD_TIMEOUT,
-    runBestEffortIsr=True,
     loop_time=0.1,
 ):
     """
@@ -27,11 +23,13 @@ async def get_image(
 
     Parameters
     ----------
-    dataset: `string`
-        dataset to use when grabbing image.
-        Examples include: 'raw','quickLookExp' (default)
-    datapath: `string`
-        Directory of butler repository
+    data_id: `dict`
+        A dictionary consisting of the keys and data required to fetch an
+        image from the butler.
+        e.g data_id = {'day_obs': 20200219, 'seq_num': 2,
+                       'detector': 0, "instrument": 'LATISS'}
+    best_effort_isr: `object`
+        BestEffortISR class instantiated with a butler.
     loop_time: `float`
         Time between polling attempts. Defaults to 0.1s
     timeout: `float`
@@ -43,36 +41,23 @@ async def get_image(
     exp: `ExposureF`
         Exposure returned from butler query
     """
-
     endtime = time.time() + timeout
-    while time.time() < endtime:
+    while True:
         # try to retrieve the image
         try:
-            logger.debug(
-                f"Pulling data with dataset = {dataset} and dataId = {data_id}"
-            )
-            #             butler.dataRef(dataset, dataId=data_id)
-            butler = dafButler.Butler(
-                datapath, instrument="LATISS", collections="LATISS/raw/all"
-            )
-            break
+            logger.debug(f"Pulling exposure with dataId = {data_id}")
+            exp = best_effort_isr.getExposure(data_id)
+            logger.debug("Image grabbed and ISR performed successfully")
+            return exp
+
         except RuntimeError:
             logger.warning(
                 f"Could not get new image from butler. Waiting "
                 f"{loop_time} seconds and trying again."
             )
             await asyncio.sleep(loop_time)
-    else:
-        raise TimeoutError(f"Unable to get raw image from butler in {timeout} seconds.")
 
-    # Found the image, Run bestEffortISR or just return in the image?
-    if runBestEffortIsr:
-        logger.debug(f"Running bestEffort ISR on {data_id} from datapath={datapath} and returning exposure")
-        bestEffort = BestEffortIsr(datapath, repodirIsGen3=True)
-        bestEffort.writePostIsrImages = False  # Don't write to butler database
-        exp = bestEffort.getExposure(data_id)
-    else:
-        logger.debug(f"Grabbing {data_id} from {dataset} and returning exposure")
-        exp = butler.get(dataset, data_id)
-
-    return exp
+        if time.time() >= endtime:
+            raise TimeoutError(
+                f"Unable to get raw image from butler in {timeout} seconds."
+            )

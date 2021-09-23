@@ -22,8 +22,6 @@ import asynctest
 import logging
 import pathlib
 
-from lsst.ts.observing.utilities.auxtel.latiss.getters import get_image
-
 logging.basicConfig()
 # Make matplotlib less chatty
 logging.getLogger("matplotlib").setLevel(logging.WARNING)
@@ -33,38 +31,56 @@ logger.propagate = True
 # See if data is available from current location
 # Expect to run from NCSA test stand
 
-# mapper = pathlib.Path("/project/shared/auxTel/_parent/_mapper")
-butler_config_file = pathlib.Path("/readonly/repo/main/butler.yaml")
+DATAPATH = pathlib.Path("/readonly/repo/main/")
+try:
+    from lsst.ts.observing.utilities.auxtel.latiss.getters import get_image
+    import lsst.daf.butler as dafButler
+    from lsst.rapid.analysis import BestEffortIsr
 
-if butler_config_file.exists():
-    dataAvailable = True
-else:
-    dataAvailable = False
+    BUTLER = dafButler.Butler(
+        DATAPATH, instrument="LATISS", collections="LATISS/raw/all"
+    )
+    DATA_AVAILABLE = True
+except ModuleNotFoundError:
+    logger.warning("Data unavailable, certain tests will be skipped")
+    DATA_AVAILABLE = False
 
 
-@asynctest.skipIf(dataAvailable is False, "No data available")
+@asynctest.skipIf(DATA_AVAILABLE is False, "No data available")
 class TestGetters(asynctest.TestCase):
     async def test_get_image(self):
         day_obs = 20200315
         seq_num = 139
-        data_id = {"day_obs": day_obs, "seq_num": seq_num, "detector": 0, "instrument": 'LATISS'}
+        data_id = {
+            "day_obs": day_obs,
+            "seq_num": seq_num,
+            "detector": 0,
+            "instrument": "LATISS",
+        }
+
+        best_effort_isr = BestEffortIsr(butler=BUTLER, repodirIsGen3=True)
 
         # BestEffortISR will run be default
         logger.debug("Starting test with ISR enabled")
         await get_image(
             data_id,
-            dataset="raw",  # "quickLookExp",
-            datapath="/readonly/repo/main/",
+            best_effort_isr,
             timeout=10,
         )
-        # Not sure how to assert if things ran properly. If it errors it
-        # raises an exception
+        # Not sure how to assert if things ran properly but if it errors
+        # then an exception is raised and the test will fail
 
-        logger.debug("Running test of get_image without ISR enabled")
-        await get_image(
-            data_id,
-            runBestEffortIsr=False,
-            dataset="raw",  # "quickLookExp",
-            datapath="/readonly/repo/main/",
-            timeout=10,
-        )
+        logger.debug("Running test of get_image when image is not in butler")
+        day_obs = 18540315
+        data_id = {
+            "day_obs": day_obs,
+            "seq_num": seq_num,
+            "detector": 0,
+            "instrument": "LATISS",
+        }
+        with self.assertRaises(TimeoutError):
+            await get_image(
+                data_id,
+                best_effort_isr,
+                timeout=3,
+            )
