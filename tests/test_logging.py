@@ -27,8 +27,10 @@ from lsst.ts.observing.utilities.decorated_logger import DecoratedLogger
 
 
 class TestLogFormat(unittest.TestCase):
-    logger_name = 'TestLogFormatApp'
-    expected_log_format = r'(\[[D,I,W,E,C]\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\s\w*\]\s)'
+    logger_name = "TestLogFormatApp"
+    expected_log_format = (
+        r"(\[[D,I,W,E,C]\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\s\w*\]\s)"
+    )
 
     def setUp(self):
 
@@ -54,15 +56,15 @@ class TestLogFormat(unittest.TestCase):
             if not isinstance(level_name, str):
                 level_name = logging.getLevelName(level_name)
 
-            if level_name.upper() == 'DEBUG':
+            if level_name.upper() == "DEBUG":
                 self.logger.debug(message)
-            elif level_name.upper() == 'INFO':
+            elif level_name.upper() == "INFO":
                 self.logger.info(message)
-            elif level_name.upper() == 'WARNING':
+            elif level_name.upper() == "WARNING":
                 self.logger.warning(message)
-            elif level_name.upper() == 'ERROR':
+            elif level_name.upper() == "ERROR":
                 self.logger.error(message)
-            elif level_name.upper() == 'CRITICAL':
+            elif level_name.upper() == "CRITICAL":
                 self.logger.critical(message)
             else:
                 raise ValueError("level_name = {:} is not valid.".format(level_name))
@@ -77,35 +79,35 @@ class TestLogFormat(unittest.TestCase):
         self.assertEqual(1, len(logger.handlers))
 
     def test_debug(self):
-        message = 'test debug message'
-        self.assertLogFormat(message, 'DEBUG')
+        message = "test debug message"
+        self.assertLogFormat(message, "DEBUG")
         self.assertLogFormat(message, logging.DEBUG)
 
     def test_info(self):
-        message = 'test info message'
-        self.assertLogFormat(message, 'INFO')
+        message = "test info message"
+        self.assertLogFormat(message, "INFO")
         self.assertLogFormat(message, logging.INFO)
 
     def test_warning(self):
-        message = 'test warning message'
-        self.assertLogFormat(message, 'WARNING')
+        message = "test warning message"
+        self.assertLogFormat(message, "WARNING")
         self.assertLogFormat(message, logging.WARNING)
 
     def test_error(self):
-        message = 'test error message'
-        self.assertLogFormat(message, 'ERROR')
+        message = "test error message"
+        self.assertLogFormat(message, "ERROR")
         self.assertLogFormat(message, logging.ERROR)
 
     def test_critical(self):
-        message = 'test critical message'
-        self.assertLogFormat(message, 'CRITICAL')
+        message = "test critical message"
+        self.assertLogFormat(message, "CRITICAL")
         self.assertLogFormat(message, logging.CRITICAL)
 
     def test_color(self):
-        message = 'test color message'
+        message = "test color message"
         with self.assertLogs(logger=self.logger_name) as cm:
             self.logger.warning(message)
             self.handler.flush()
 
             log_message = self.handler.format(cm.records[-1]).strip()
-            self.assertRegex(log_message, r'(\x1b)')
+            self.assertRegex(log_message, r"(\x1b)")
