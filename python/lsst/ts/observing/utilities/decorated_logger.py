@@ -24,16 +24,16 @@ import sys
 
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 
-RESET_SEQ = '\033[0m'
-COLOR_SEQ = '\033[1;%dm'
-BOLD_SEQ = '\033[1m'
+RESET_SEQ = "\033[0m"
+COLOR_SEQ = "\033[1;%dm"
+BOLD_SEQ = "\033[1m"
 
 COLORS = {
-    'WARNING': YELLOW,
-    'INFO': WHITE,
-    'DEBUG': BLUE,
-    'CRITICAL': RED,
-    'ERROR': RED
+    "WARNING": YELLOW,
+    "INFO": WHITE,
+    "DEBUG": BLUE,
+    "CRITICAL": RED,
+    "ERROR": RED,
 }
 
 
@@ -48,8 +48,13 @@ class DecoratedLogger(logging.Formatter):
     use_colors : bool (True).
         Print colored messages?
     """
-    def __init__(self, fmt=" [%(levelname).1s %(asctime)s %(name)s] %(message)s", datefmt="%Y-%m-%d %H:%M:%S",
-                 use_colors=True):
+
+    def __init__(
+        self,
+        fmt=" [%(levelname).1s %(asctime)s %(name)s] %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        use_colors=True,
+    ):
         logging.Formatter.__init__(self, fmt, datefmt=datefmt)
         self.use_colors = use_colors
 
