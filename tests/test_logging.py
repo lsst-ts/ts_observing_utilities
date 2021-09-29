@@ -32,7 +32,7 @@ class TestLogFormat(unittest.TestCase):
 
     def setUp(self):
 
-        self.formatter = DecoratedLogger
+        self.formatter = DecoratedLogger()
         self.stream = io.StringIO()
         self.handler = logging.StreamHandler(self.stream)
         self.logger = DecoratedLogger.get_decorated_logger(self.logger_name)
