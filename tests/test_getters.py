@@ -58,7 +58,7 @@ class TestGetters(asynctest.TestCase):
             "instrument": "LATISS",
         }
 
-        best_effort_isr = BestEffortIsr(butler=BUTLER, repodirIsGen3=True)
+        best_effort_isr = BestEffortIsr(butler=BUTLER)
 
         # BestEffortISR will run be default
         logger.debug("Starting test with ISR enabled")
