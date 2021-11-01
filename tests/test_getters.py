@@ -31,14 +31,16 @@ logger.propagate = True
 # See if data is available from current location
 # Expect to run from NCSA test stand
 
-DATAPATH = pathlib.Path("/readonly/repo/main/")
+DATAPATH = pathlib.Path("/readonly/repo/main")
 try:
     from lsst.ts.observing.utilities.auxtel.latiss.getters import get_image
+
     import lsst.daf.butler as dafButler
     from lsst.rapid.analysis import BestEffortIsr
+    import lsst.afw.image as afwImage
 
     BUTLER = dafButler.Butler(
-        DATAPATH, instrument="LATISS", collections="LATISS/raw/all"
+        DATAPATH.as_posix(), instrument="LATISS", collections="LATISS/raw/all"
     )
     DATA_AVAILABLE = True
 except ModuleNotFoundError:
@@ -58,20 +60,22 @@ class TestGetters(asynctest.TestCase):
             "instrument": "LATISS",
         }
 
-        best_effort_isr = BestEffortIsr(butler=BUTLER)
+        best_effort_isr = BestEffortIsr(DATAPATH.as_posix())
 
         # BestEffortISR will run be default
         logger.debug("Starting test with ISR enabled")
-        await get_image(
+        exp = await get_image(
             data_id,
             best_effort_isr,
             timeout=10,
         )
+
         # Not sure how to assert if things ran properly but if it errors
         # then an exception is raised and the test will fail
+        self.assertTrue(isinstance(exp, afwImage.Exposure))
 
         logger.debug("Running test of get_image when image is not in butler")
-        day_obs = 18540315
+        day_obs = 18540315  # This is an invalid ID and does not have an image
         data_id = {
             "day_obs": day_obs,
             "seq_num": seq_num,
