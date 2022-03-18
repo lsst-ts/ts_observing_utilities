@@ -41,8 +41,10 @@ async def get_image(
     exp: `ExposureF`
         Exposure returned from butler query
     """
+
     endtime = time.time() + timeout
     while True:
+        err = None
         # try to retrieve the image
         try:
             logger.debug(f"Pulling exposure with dataId = {data_id}")
@@ -50,11 +52,13 @@ async def get_image(
             logger.debug("Image grabbed and ISR performed successfully")
             return exp
 
-        except RuntimeError:
+        # except dafButler.exceptions.InconsistentDataIdError:
+        except Exception as err:
             logger.warning(
                 f"Could not get new image from butler. Waiting "
                 f"{loop_time} seconds and trying again."
             )
+            logger.debug(f"Exception is {err}")
             await asyncio.sleep(loop_time)
 
         if time.time() >= endtime:

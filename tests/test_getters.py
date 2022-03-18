@@ -29,9 +29,10 @@ logger = logging.getLogger(__name__)
 logger.propagate = True
 
 # See if data is available from current location
-# Expect to run from NCSA test stand
+# Expect to run from Tucson test stand but no data exists
+# there at this time.
 
-DATAPATH = pathlib.Path("/readonly/repo/main")
+DATAPATH = pathlib.Path("/repo/LATISS")  # for the summit
 try:
     from lsst.ts.observing.utilities.auxtel.latiss.getters import get_image
 
@@ -51,8 +52,8 @@ except ModuleNotFoundError:
 @asynctest.skipIf(DATA_AVAILABLE is False, "No data available")
 class TestGetters(asynctest.TestCase):
     async def test_get_image(self):
-        day_obs = 20200315
-        seq_num = 139
+        day_obs = 20211104
+        seq_num = 950
         data_id = {
             "day_obs": day_obs,
             "seq_num": seq_num,
