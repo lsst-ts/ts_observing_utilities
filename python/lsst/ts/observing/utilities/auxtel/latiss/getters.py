@@ -44,7 +44,6 @@ async def get_image(
 
     endtime = time.time() + timeout
     while True:
-        err = None
         # try to retrieve the image
         try:
             logger.debug(f"Pulling exposure with dataId = {data_id}")
