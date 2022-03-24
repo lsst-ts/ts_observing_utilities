@@ -1,0 +1,2 @@
+@Library('JenkinsShared')_
+CondaPipeline([], "ts_observing_utilities", "lsst.ts.observing.utilities")
