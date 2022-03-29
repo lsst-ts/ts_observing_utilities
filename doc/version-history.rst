@@ -10,6 +10,10 @@ Version History
 .. No new work should be required in order to complete this section.
 .. Below is an example of a version history format.
 
+v0.4.2
+------
+* Change archiver reference to oods one due to image creation process change (DMTN-143)
+
 v0.4.1
 ------
 * Added Jenkinsfile for conda recipe

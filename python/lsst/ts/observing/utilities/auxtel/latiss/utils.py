@@ -5,7 +5,7 @@ from lsst.ts.observatory.control.constants import latiss_constants
 
 def parse_obs_id(obs_id):
     """Return a data_id dictionary from a ObsID (which comes from the
-    archiver imageInOODS event)
+    oods imageInOODS event)
     The dictionary is formatted for a gen3 butler.
 
     Parameters
