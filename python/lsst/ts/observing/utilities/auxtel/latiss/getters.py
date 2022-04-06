@@ -64,5 +64,5 @@ async def get_image(
 
         if time.time() >= endtime:
             raise TimeoutError(
-                f"Unable to get raw image from butler in {timeout} seconds."
+                f"Unable to get raw image for {data_id} from butler in {timeout} seconds."
             )
