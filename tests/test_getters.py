@@ -32,19 +32,25 @@ logger.propagate = True
 # Expect to run from Tucson test stand but no data exists
 # there at this time.
 
-DATAPATH = pathlib.Path("/repo/LATISS")  # for the summit
+DATAPATH = pathlib.Path("/repo/LATISS")  # for the summit and TTS
 try:
     from lsst.ts.observing.utilities.auxtel.latiss.getters import get_image
 
     import lsst.daf.butler as dafButler
-    from lsst.rapid.analysis import BestEffortIsr
+    from lsst.summit.utils import BestEffortIsr
     import lsst.afw.image as afwImage
 
     BUTLER = dafButler.Butler(
-        DATAPATH.as_posix(), instrument="LATISS", collections="LATISS/raw/all"
+        DATAPATH.as_posix(),
+        instrument="LATISS",
+        collections=[
+            "LATISS/raw/all",
+        ],
     )
     DATA_AVAILABLE = True
-except ModuleNotFoundError:
+    logger.info(f"Data available is {DATA_AVAILABLE}, no tests will be skipped")
+except ModuleNotFoundError as err:
+    logger.debug(f"Caught import error of {err}")
     logger.warning("Data unavailable, certain tests will be skipped")
     DATA_AVAILABLE = False
 
