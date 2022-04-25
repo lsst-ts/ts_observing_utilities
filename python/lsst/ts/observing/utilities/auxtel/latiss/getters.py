@@ -51,15 +51,11 @@ async def get_image(
             logger.debug("Image grabbed and ISR performed successfully")
             return exp
 
-        # TODO: DM-34120 -- will allow the use of proper exception
-        # handling below
-        # except dafButler.exceptions.InconsistentDataIdError:
-        except Exception as err:
-            logger.warning(
+        except ValueError:
+            logger.exception(
                 f"Could not get new image from butler. Waiting "
                 f"{loop_time} seconds and trying again."
             )
-            logger.debug(f"Exception is {err}, dataid is {data_id}")
             await asyncio.sleep(loop_time)
 
         if time.time() >= endtime:
