@@ -1,13 +1,11 @@
-"""Sphinx configuration file for an LSST stack package.
+"""Sphinx configuration file for TSSW package"""
 
-This configuration only affects single-package Sphinx documentation builds.
-"""
-
-from documenteer.sphinxconfig.stackconf import build_package_configs
-import lsst.ts.observing.utilities
+from documenteer.conf.pipelinespkg import *
 
 
-_g = globals()
-_g.update(build_package_configs(
-    project_name='ts_observing_utilities',
-    version=lsst.ts.observing.utilities.version.__version__))
+project = "ts_observing_utilties"
+html_theme_options["logotext"] = project
+html_title = project
+html_short_title = project
+
+intersphinx_mapping["ts_xml"] = ("https://ts-xml.lsst.io", None)
