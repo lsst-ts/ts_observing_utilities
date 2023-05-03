@@ -1,6 +1,9 @@
 import asyncio
 import logging
 import time
+import typing
+
+from lsst.afw.image import ExposureF
 
 STD_TIMEOUT = 10  # seconds
 
@@ -11,11 +14,11 @@ logger = logging.getLogger(__name__)
 
 
 async def get_image(
-    data_id,
-    best_effort_isr,
-    timeout=STD_TIMEOUT,
-    loop_time=0.1,
-):
+    data_id: dict[str, int | str],
+    best_effort_isr: typing.Any,
+    timeout: float,
+    loop_time: float = 0.1,
+) -> ExposureF:
     """
     Retrieve image from butler repository.
     If not present, then it will poll at intervals of loop_time (0.1s default)
@@ -46,7 +49,7 @@ async def get_image(
         # try to retrieve the image
         try:
             logger.debug(f"Pulling exposure with dataId = {data_id}")
-            exp = best_effort_isr.getExposure(data_id)
+            exp = best_effort_isr.getExposure(data_id, detector=0)
             logger.debug("Image grabbed and ISR performed successfully")
             return exp
 
