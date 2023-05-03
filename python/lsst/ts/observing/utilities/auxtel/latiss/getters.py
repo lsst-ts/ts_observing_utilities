@@ -60,3 +60,47 @@ async def get_image(
 
         if time.time() >= endtime:
             raise TimeoutError(f"Unable to get raw image from butler in {timeout} seconds.")
+
+
+def get_image_sync(
+    data_id: dict[str, int | str],
+    best_effort_isr: typing.Any,
+    timeout: float,
+    loop_time: float = 0.1,
+) -> ExposureF:
+    """Retrieve image from butler repository.
+
+    If not present, then it will poll at intervals of loop_time (0.1s default)
+    until the image arrives, or until the timeout is reached.
+
+    Parameters
+    ----------
+    data_id : `dict`
+        A dictionary consisting of the keys and data required to fetch an
+        image from the butler.
+        e.g data_id = {'day_obs': 20200219, 'seq_num': 2,
+                       'detector': 0, "instrument": 'LATISS'}
+    best_effort_isr : `BestEffortIsr`
+        BestEffortISR class instantiated with a butler.
+    loop_time : `float`
+        Time between polling attempts. Defaults to 0.1s
+    timeout:  `float`
+        Total time to poll for image before raising an exception
+
+    Returns
+    -------
+    exp: `ExposureF`
+        Exposure returned from butler query
+    """
+
+    endtime = time.time() + timeout
+    while True:
+        try:
+            exp = best_effort_isr.getExposure(data_id, detector=0)
+            return exp
+
+        except ValueError:
+            time.sleep(loop_time)
+
+        if time.time() >= endtime:
+            raise TimeoutError(f"Unable to get raw image from butler in {timeout} seconds.")
