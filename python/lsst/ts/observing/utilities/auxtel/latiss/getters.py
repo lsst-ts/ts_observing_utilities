@@ -1,6 +1,6 @@
-import time
 import asyncio
 import logging
+import time
 
 STD_TIMEOUT = 10  # seconds
 
@@ -37,7 +37,6 @@ async def get_image(
 
     Returns
     -------
-
     exp: `ExposureF`
         Exposure returned from butler query
     """
@@ -59,6 +58,4 @@ async def get_image(
             await asyncio.sleep(loop_time)
 
         if time.time() >= endtime:
-            raise TimeoutError(
-                f"Unable to get raw image from butler in {timeout} seconds."
-            )
+            raise TimeoutError(f"Unable to get raw image from butler in {timeout} seconds.")

@@ -2,7 +2,6 @@
 
 from documenteer.conf.pipelinespkg import *
 
-
 project = "ts_observing_utilties"
 html_theme_options["logotext"] = project
 html_title = project
