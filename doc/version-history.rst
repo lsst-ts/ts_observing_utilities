@@ -10,6 +10,11 @@ Version History
 .. No new work should be required in order to complete this section.
 .. Below is an example of a version history format.
 
+v0.4.4
+------
+
+* Update build setup to skip flake8 when running pytest.
+
 v0.4.3
 ------
 

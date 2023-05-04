@@ -8,7 +8,9 @@ config.log
 *.pyc
 *_wrap.cc
 *Lib.py
-
+*.egg
+*.egg-info
+ 
 # Built by sconsUtils
 version.py
 bin/
