@@ -19,8 +19,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import logging
 import io
+import logging
 import unittest
 
 from lsst.ts.observing.utilities.decorated_logger import DecoratedLogger
@@ -28,12 +28,9 @@ from lsst.ts.observing.utilities.decorated_logger import DecoratedLogger
 
 class TestLogFormat(unittest.TestCase):
     logger_name = "TestLogFormatApp"
-    expected_log_format = (
-        r"(\[[D,I,W,E,C]\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\s\w*\]\s)"
-    )
+    expected_log_format = r"(\[[D,I,W,E,C]\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\s\w*\]\s)"
 
     def setUp(self):
-
         self.formatter = DecoratedLogger()
         self.stream = io.StringIO()
         self.handler = logging.StreamHandler(self.stream)
@@ -50,9 +47,7 @@ class TestLogFormat(unittest.TestCase):
         pass
 
     def assertLogFormat(self, message, level_name):
-
         with self.assertLogs(logger=self.logger_name, level=level_name) as cm:
-
             if not isinstance(level_name, str):
                 level_name = logging.getLevelName(level_name)
 
