@@ -18,9 +18,10 @@
 #
 # You should have received a copy of the GNU General Public License
 
-import asynctest
 import logging
 import pathlib
+
+import asynctest
 
 logging.basicConfig()
 # Make matplotlib less chatty
@@ -34,11 +35,10 @@ logger.propagate = True
 
 DATAPATH = pathlib.Path("/repo/LATISS")  # for the summit and TTS
 try:
-    from lsst.ts.observing.utilities.auxtel.latiss.getters import get_image
-
+    import lsst.afw.image as afwImage
     import lsst.daf.butler as dafButler
     from lsst.summit.utils import BestEffortIsr
-    import lsst.afw.image as afwImage
+    from lsst.ts.observing.utilities.auxtel.latiss.getters import get_image
 
     BUTLER = dafButler.Butler(
         DATAPATH.as_posix(),

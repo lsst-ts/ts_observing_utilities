@@ -68,8 +68,6 @@ def calculate_xy_offsets(target_position, current_position):
     """Returns x/y offset in arcseconds based on current
     and desired position"""
 
-    dx_arcsec, dy_arcsec = latiss_constants.pixel_scale * (
-        target_position - current_position
-    )
+    dx_arcsec, dy_arcsec = latiss_constants.pixel_scale * (target_position - current_position)
 
     return dx_arcsec, dy_arcsec
